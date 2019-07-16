@@ -1,6 +1,7 @@
 package main
 
 import (
+	_"pyg/models"
 	_ "pyg/routers"
 	"github.com/astaxie/beego"
 )
