@@ -7,11 +7,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
 	<title>个人注册</title>
 
-    <link rel="stylesheet" type="text/css" href="css/all.css" />
-    <link rel="stylesheet" type="text/css" href="css/pages-register.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="/static/css/pages-register.css" />
     
-	<script type="text/javascript" src="js/all.js"></script>
-	<script type="text/javascript" src="js/pages/register.js"></script>
+	<script type="text/javascript" src="/static/js/all.js"></script>
+	<script type="text/javascript" src="/static/js/register.js"></script>
 </head>
 
 <body>
@@ -32,28 +32,35 @@
 							<span class="error"></span>
 						</div>
 					</div>
-					<div class="control-group">
-						<label for="inputPassword" class="control-label">登录密码：</label>
-						<div class="controls">
-							<input type="password" name="password" placeholder="设置登录密码" class="input-xfat input-xlarge">
-						</div>
-					</div>
-					<div class="control-group">
-						<label for="inputPassword" class="control-label">确认密码：</label>
-						<div class="controls">
-							<input type="password" name="repassword" placeholder="再次确认密码" class="input-xfat input-xlarge">
-						</div>
-					</div>
-					<div class="control-group">
-						<label for="inputPassword" class="control-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-						<div class="controls">
-							<input name="m1" type="checkbox" value="2" checked=""><span>同意协议并注册《品优购用户协议》</span>
-						</div>
-					</div>
+					{{/*<div class="control-group">*/}}
+						{{/*<label for="inputPassword" class="control-label">登录密码：</label>*/}}
+						{{/*<div class="controls">*/}}
+						{{/*<div class="controls btn-reg">*/}}
+							{{/*<input type="password" name="password" placeholder="设置登录密码" class="input-xfat input-xlarge">*/}}
+
+						{{/*</div>*/}}
+					{{/*</div>*/}}
+
+					{{/*隐藏域传值*/}}
+					<input type="hidden" name="id" value="{{.id}}">
+
+					{{/*<div class="control-group">*/}}
+						{{/*<label for="inputPassword" class="control-label">确认密码：</label>*/}}
+						{{/*<div class="controls">*/}}
+							{{/*<input type="password" name="repassword" placeholder="再次确认密码" class="input-xfat input-xlarge">*/}}
+						{{/*</div>*/}}
+					{{/*</div>*/}}
+					{{/*<div class="control-group">*/}}
+						{{/*<label for="inputPassword" class="control-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>*/}}
+						{{/*<div class="controls">*/}}
+							{{/*<input name="m1" type="checkbox" value="2" checked=""><span>同意协议并注册《品优购用户协议》</span>*/}}
+						{{/*</div>*/}}
+					{{/*</div>*/}}
 					<div class="control-group">
 						<label class="control-label"></label>
 						<div class="controls btn-reg">
-							<a class="sui-btn btn-block btn-xlarge btn-danger reg-btn" href="javascript:;" target="_blank">完成注册</a>
+							{{/*<a class="sui-btn btn-block btn-xlarge btn-danger reg-btn" href="javascript:;" target="_blank">完成注册</a>*/}}
+							<input type="submit" class="sui-btn btn-block btn-xlarge btn-danger reg-btn" value="确认激活">
 						</div>
 					</div>
 				</form>

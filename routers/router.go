@@ -6,8 +6,17 @@ import (
 )
 
 func init() {
-    beego.Router("/", &controllers.MainController{})
-    beego.Router("/register",&controllers.UserController{},"get:ShowRegister")
+    //注册
+    beego.Router("/register",&controllers.UserController{},"get:ShowRegister;post:HandleRegister")
     //发送短信
-    beego.Router("/sendMsg", &controllers.UserController{}, "get:ShowSendMsg")
+    beego.Router("/sendMsg", &controllers.UserController{}, "post:SendMsg")
+    //激活业务
+    beego.Router("/active", &controllers.UserController{}, "get:ShowActive;post:HandleActive")
+    //激活用户
+    beego.Router("/activeUser", &controllers.UserController{}, "get:ActiveUser")
+    //登录
+    beego.Router("/login", &controllers.UserController{}, "get:ShowLogin;post:HandleLogin")
+    //主页
+    beego.Router("/", &controllers.GoodsController{}, "get:ShowIndex")
+
 }
