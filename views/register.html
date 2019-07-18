@@ -6,10 +6,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
 	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
 	<title>个人注册</title>
-	<link rel="stylesheet" type="text/css" href="css/all.css" />
-    <link rel="stylesheet" type="text/css" href="css/main.css" />
-	<script type="text/javascript" src="js/all.js"></script>
-	<script type="text/javascript" src="js/register.js"></script>
+	{{/*.../static相对路径,/static绝对路径*/}}
+	<link rel="stylesheet" type="text/css" href="../static/css/all.css" />
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css" />
+	<script type="text/javascript" src="/static/js/all.js"></script>
+	<script type="text/javascript" src="/static/js/register.js"></script>
 </head>
 
 <body>
@@ -61,7 +62,8 @@
 					<div class="control-group">
 						<label class="control-label"></label>
 						<div class="controls btn-reg">
-							<a id="reg_btn" class="sui-btn btn-block btn-xlarge btn-danger reg-btn" href="javascript:;">完成注册</a>
+							{{/*<a id="reg_btn" class="sui-btn btn-block btn-xlarge btn-danger reg-btn" href="javascript:;">完成注册</a>*/}}
+							<input type="submit" class="sui-btn btn-block btn-xlarge btn-danger reg-btn" value="完成注册">
 						</div>
 					</div>
 				</form>
@@ -101,9 +103,10 @@
 				}else{
 					$('#phone').next().html('');
 				}
+				// 每隔5秒重新发送,一般设置60秒
 				var time = 5;
-				// $('#dyMobileButton').html('重新发送' + time + 's');
-				// $('#dyMobileButton').attr('disabled',true);
+				$('#dyMobileButton').html('重新发送' + time + 's');
+				$('#dyMobileButton').attr('disabled',true);
 				var fn = function(){
 					time--;
 					if(time > 0){
@@ -116,6 +119,17 @@
 				};
 				fn();
 				var interval = setInterval(fn,1000);
+
+				//ajax发送请求
+				//参数1-资源路径,相当于form中的action,参数2-发送的数据(是json格式)
+				//参数3-回调函数,告诉前端是否成功
+				param={phone:phone}//获取到的手机号
+				$.post("/sendMsg",param,function (data) {
+					//失败的处理
+					if (data.statusCode!=200){
+						alert("短信发送失败,请重新发送")
+					}
+				})
 			});
 		});
 		
