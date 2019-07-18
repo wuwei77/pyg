@@ -29,7 +29,7 @@ type Address struct {
 
 func init() {
 	//注册数据库
-	orm.RegisterDataBase("default", "mysql", "root:123456@tcp(192.168.31.47:3306)/pyg")
+	orm.RegisterDataBase("default", "mysql", "root:123456@tcp(192.168.31.47:3306)/pyg?loc=Local")
 
 	//注册表
 	orm.RegisterModel(new(User), new(Address))
