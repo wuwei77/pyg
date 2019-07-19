@@ -127,12 +127,23 @@ type OrderGoods struct {
 	Comment   string `orm:"default('')"`    //评论
 }
 
+//首页三级(菜单)联动表
+type TpshopCategory struct {
+	Id         int
+	CateName   string `orm:"default('')"` //类型名称
+	Pid        int    `orm:"default(0)"`  //父类id
+	IsShow     int    `orm:"default(0)"`  //是否展示
+	CreateTime int    `orm:"null"`        //创建时间
+	UpdateTime int    `orm:"null"`        //更新时间
+	DeleteTime int    `orm:"null"`        //删除时间
+}
+
 func init() {
 	// set default database
 	orm.RegisterDataBase("default", "mysql", "root:123456@tcp(192.168.31.39:3306)/pyg?charset=utf8")
 
 	// register model
-	orm.RegisterModel(new(User), new(Address), new(OrderGoods), new(OrderInfo), new(IndexPromotionBanner), new(IndexTypeGoodsBanner), new(IndexGoodsBanner), new(GoodsImage), new(GoodsSKU), new(GoodsType), new(Goods))
+	orm.RegisterModel(new(User), new(Address), new(OrderGoods), new(OrderInfo), new(IndexPromotionBanner), new(IndexTypeGoodsBanner), new(IndexGoodsBanner), new(GoodsImage), new(GoodsSKU), new(GoodsType), new(Goods),new(TpshopCategory))
 
 	// create table
 	orm.RunSyncdb("default", false, true)

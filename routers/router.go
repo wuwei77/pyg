@@ -28,6 +28,8 @@ func init() {
     beego.Router("/user/userCenterInfo",&controllers.UserController{}, "get:ShowUserCenterInfo")
     //用户中心地址页
 	beego.Router("/user/userCenterSite", &controllers.UserController{}, "get:ShowUserCenterSite;post:HandleUserCenterSite")
+	//生鲜模块
+	beego.Router("/indexSx",&controllers.GoodsController{}, "get:ShowIndexSx")
 }
 //过滤器函数--参数必须是ctx *centex.Contex
 //过滤一些需要登录的界面操作

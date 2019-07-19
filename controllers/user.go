@@ -381,9 +381,8 @@ func (this *UserController) ShowUserCenterSite() {
 	qs.Filter("Isdefault", true).One(&addr)
 	this.Data["addr"] = addr
 	phone := addr.Phone
-	newphone := phone[:3]+"****"+phone[7:]
-	this.Data["phone"] = newphone
-
+	addr.Phone = phone[:3]+"****"+phone[7:]
+	this.Data["phone"] = addr.Phone
 
 	this.Data["fileName"] = "site"
 	this.Layout = "userCenter_layout.html"
