@@ -55,7 +55,7 @@ func (this *UserController) HandleRegister() {
 	//验证码校验   1.首先要短信发送
 
 	//从redis取出验证码
-	conn, err := redis.Dial("tcp", "192.168.31.21:6379")
+	conn, err := redis.Dial("tcp", "192.168.31.39:6379")
 	if err != nil {
 		ErrResp(this, "redis连接失败", "register.html")
 		return
@@ -96,14 +96,14 @@ func (this *UserController) SendMsg() {
 		return
 	}
 	//电话格式检验
-	reg, err:= regexp.Compile(`^1[3-9][0-9]{9}$`)
-	if err!=nil{
+	reg, err := regexp.Compile(`^1[3-9][0-9]{9}$`)
+	if err != nil {
 		fmt.Println("电话号码格式错误", err)
 		return
 	}
 	//找到符合的返回找到的字符串,没有找到为空
 	result := reg.FindString(phone)
-	fmt.Println("result:",result)
+	fmt.Println("result:", result)
 	if result == "" {
 		ErrResp(this, "电话号码不能为空", "register.html")
 		return
@@ -115,14 +115,14 @@ func (this *UserController) SendMsg() {
 	//生成6位数随机数
 	//fmt.Printf("", )打印到控制台,fmt.Sprintf,打印到返回值,凑成字符串
 	//%06d  按六位输出,前面不足补0
-	vscode :=fmt.Sprintf("%06d",rand.Int31n(1000000))
+	vscode := fmt.Sprintf("%06d", rand.Int31n(1000000))
 	//vscode := "123456"
 
 	//后台要拿出验证码和输入的作比较,这里验证要存到redis中去
 	//另一种方法.发送到前端,用隐藏域传值
 
 	//实现把验证码写入redis中去
-	conn, err := redis.Dial("tcp", "192.168.31.21:6379")
+	conn, err := redis.Dial("tcp", "192.168.31.39:6379")
 	if err != nil {
 		//这里要返回错误给前端,这里返回的是一个json
 		resp := make(map[string]interface{})
@@ -222,7 +222,7 @@ func (this *UserController) HandleActive() {
 	sendEmail.From = "1264778754@qq.com"
 	sendEmail.To = []string{email}
 	sendEmail.Subject = "品优购用户激活"
-	sendEmail.HTML = `<a href="http://192.168.31.21:8080/activeUser?email=`+email+`&id=` + strconv.Itoa(id) + `">点击激活用户</a>`
+	sendEmail.HTML = `<a href="http://192.168.31.21:8080/activeUser?email=` + email + `&id=` + strconv.Itoa(id) + `">点击激活用户</a>`
 
 	//发送邮件
 	err = sendEmail.Send()
@@ -238,10 +238,10 @@ func (this *UserController) HandleActive() {
 
 //激活用户
 func (this *UserController) ActiveUser() {
-	id,err := this.GetInt("id")
+	id, err := this.GetInt("id")
 	email := this.GetString("email")
 	if err != nil || email == "" {
-		fmt.Println("邮箱错误",err)
+		fmt.Println("邮箱错误", err)
 		this.TplName = "register.html"
 		return
 	}
@@ -251,15 +251,15 @@ func (this *UserController) ActiveUser() {
 	var user models.User
 	user.Id = id
 	err = o.Read(&user)
-	if err !=nil{
+	if err != nil {
 		fmt.Println("激活用户不存在")
 		this.TplName = "register.html"
 		return
 	}
-	user.Active  =true
+	user.Active = true
 	user.Email = email
 	//更新
-	_,err = o.Update(&user)
+	_, err = o.Update(&user)
 	if err != nil {
 		fmt.Println("激活用户失败")
 		this.TplName = "register.html"
@@ -267,20 +267,31 @@ func (this *UserController) ActiveUser() {
 	}
 
 	//返回数据
-	this.Redirect("/login",302)
+	this.Redirect("/login", 302)
 }
 
 //展示登录界面方法
 func (this *UserController) ShowLogin() {
+	//二:2.获取cookie
+	userName := this.Ctx.GetCookie("userName")
+	if userName == "" { //如果没有cookie,userName为空则不选中
+		this.Data["checked"] = ""
+		this.Data["userName"] = ""
+	} else { //默认选中为checked
+		this.Data["checked"] = "checked"
+		this.Data["userName"] = userName
+	}
+
 	this.TplName = "login.html"
 }
+
 //处理登录业务方法
 func (this *UserController) HandleLogin() {
 	//1.获取数据
 	userName := this.GetString("userName")
 	pwd := this.GetString("password")
 	//2.校验数据
-	if userName == "" || pwd ==""{
+	if userName == "" || pwd == "" {
 		this.Redirect("/login", 302)
 		return
 	}
@@ -290,21 +301,134 @@ func (this *UserController) HandleLogin() {
 
 	user.Name = userName
 	err := o.Read(&user, "Name")
-	if err != nil{
+	if err != nil {
 		this.Redirect("/login?errmsg=用户名或密码错误", 302)
 		return
 	}
 	//判断数据库密码和输入的密码是否一致
-	if user.PassWord != pwd{
+	if user.PassWord != pwd {
 		this.Redirect("/login?errmsg=用户名或密码错误", 302)
 		return
 	}
 	//激活校验
-	if user.Active == false{
+	if user.Active == false {
 		this.Redirect("/login?errmsg=当前用户未激活", 302)
 		return
 	}
 
+	//二:1.当登录成功且选中的情况下存储cookie-在首页展示的时候获取cookie
+	checked := this.GetString("m1")
+	if checked == "2" {
+		this.Ctx.SetCookie("userName", userName, 60*60)
+	} else { //不选中删除
+		this.Ctx.SetCookie("usreName", userName, -1)
+	}
+
+	//二: 2.设置session--然后在加载首页的时候获取session
+	this.SetSession("pyg_userName", userName)
+
 	//4.返回数据
 	this.Redirect("/", 302)
+}
+
+//退出登录
+func (this *UserController) Logout() {
+	this.DelSession("pyg_userName")
+	this.Redirect("/", 302)
+}
+
+//用户中心展示
+func (this *UserController) ShowUserCenterInfo() {
+	//1.获取session
+	userName := this.GetSession("pyg_userName")
+
+	//根据用户名向数据库查信息
+	o := orm.NewOrm()
+	var user models.User
+
+	user.Name = userName.(string)
+	o.Read(&user, "Name")
+
+	//获取地址信息
+	var addr models.Address
+
+	o.QueryTable("Address").RelatedSel("User").Filter("User__Id", user.Id).Filter("Isdefault", true).One(&addr)
+
+	//向视图中传递数据
+	this.Data["addr"] = addr
+	this.Data["userName"] = userName
+
+	//传一个文件名
+	this.Data["fileName"] = "info"
+	this.Layout = "userCenter_layout.html"
+
+	this.TplName = "user_center_info.html"
+}
+
+//用户中心收货地址页面展示
+func (this *UserController) ShowUserCenterSite() {
+
+	this.Data["fileName"] = "site"
+	this.Layout = "userCenter_layout.html"
+	this.TplName = "user_center_site.html"
+}
+
+//收货地址信息处理
+func (this *UserController) HandleUserCenterSite() {
+	//1.获取数据
+	receiver := this.GetString("receiver")
+	addr := this.GetString("addr")
+	zipCode := this.GetString("zipCode")
+	phone := this.GetString("phone")
+
+	//2.数据校验
+	if receiver == "" || addr == "" || zipCode == "" || phone == "" {
+		//this.Data["errmsg"] = "收件人或详细地址或邮编或手机不能为空"
+		//this.TplName = "user_center_site.html"
+		this.Redirect("/user/userCenterSite", 302)
+		return
+	}
+	//3.处理数据
+	//插入并更新
+	o := orm.NewOrm()
+	var address models.Address
+
+	//addr.Isdefault = true
+	//先按照这个默认地址查询数据库--查询该用户
+	//err := o.Read(&addr, "Isdefault")
+
+	//获取用户
+	userName := this.GetSession("pyg_userName")
+
+	//获取User对象
+	var user models.User
+	user.Name = userName.(string)
+	o.Read(&user, "Name")
+	//多表查询
+	//Filter中的User是字段名
+	qs := o.QueryTable("Address").RelatedSel("User").Filter("User__Name", userName.(string))
+	err := qs.Filter("Isdefault", true).One(&address)
+
+	//设置每次输入的地址为默认地址,把原来的默认地址设置为非默认
+	if err == nil {
+		//如果查询到说明有默认地址,把这个默认地址更新为非默认地址,如果没有查到就直接赋值
+		//先把原来的默认地址设置为非默认地址,然后添加新地址
+		address.Isdefault = false
+		o.Update(&address)
+	}
+	//获取操作地址对象--赋值后插入数据库
+	var newAddress models.Address
+	newAddress.Receiver = receiver
+	newAddress.Addr = addr
+	newAddress.Zipcode = zipCode
+	newAddress.Phone = phone
+	newAddress.Isdefault = true
+
+	//关联外键,一对多插入的是对象
+	newAddress.User = &user
+	o.Insert(&newAddress)
+
+	//4.返回数据
+	this.Redirect("/user/userCenterInfo", 302)
+
 }
