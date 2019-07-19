@@ -15,9 +15,14 @@
 					欢迎您：<em>张 山</em>
 				</div>
 				<div class="login_btn fl">
+					{{if compare .userName nil}}
 					<a href="login.html">登录</a>
 					<span>|</span>
 					<a href="register.html">注册</a>
+					{{else}}
+					{{/*<span>{{.userName}}欢迎您</span>*/}}
+					<a>{{.userName}}欢迎您</a>
+					{{end}}
 				</div>
 				<div class="user_link fl">
 					<span>|</span>

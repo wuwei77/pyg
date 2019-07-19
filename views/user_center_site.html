@@ -6,7 +6,12 @@
 				<div class="site_con">
 					<dl>
 						<dt>当前地址：</dt>
-						<dd>北京市 海淀区 东北旺西路8号中关村软件园 （李思 收） 182****7528</dd>
+						{{/*刚注册没有地址时的处理*/}}
+						{{if compare .addr nil}}
+						<dd>无默认地址</dd>
+						{{else}}
+						<dd>{{.addr.Addr}}（{{.addr.Receiver}} 收）{{.phone}} </dd>
+                        {{end}}
 					</dl>					
 				</div>
 				<h3 class="common_title2">编辑地址</h3>
@@ -33,5 +38,3 @@
 					</form>
 				</div>
 		</div>
-
-

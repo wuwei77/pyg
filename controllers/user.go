@@ -356,7 +356,10 @@ func (this *UserController) ShowUserCenterInfo() {
 
 	//向视图中传递数据
 	this.Data["addr"] = addr
-	this.Data["userName"] = userName
+	if userName !=nil{
+		this.Data["userName"] = userName.(string)
+	}
+
 
 	//传一个文件名
 	this.Data["fileName"] = "info"
@@ -367,6 +370,20 @@ func (this *UserController) ShowUserCenterInfo() {
 
 //用户中心收货地址页面展示
 func (this *UserController) ShowUserCenterSite() {
+
+	//获取当前用户默认地址
+	userName := this.GetSession("pyg_userName")
+	//获取地址对象
+	var addr models.Address
+
+	o := orm.NewOrm()
+	qs :=o.QueryTable("Address").RelatedSel("User").Filter("User__Name",userName.(string))
+	qs.Filter("Isdefault", true).One(&addr)
+	this.Data["addr"] = addr
+	phone := addr.Phone
+	newphone := phone[:3]+"****"+phone[7:]
+	this.Data["phone"] = newphone
+
 
 	this.Data["fileName"] = "site"
 	this.Layout = "userCenter_layout.html"
